@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httputil"
+	"net/url"
 )
 
 func handler(w http.ResponseWriter, req *http.Request) {
@@ -13,8 +14,13 @@ func handler(w http.ResponseWriter, req *http.Request) {
 		log.Fatalln(err)
 	}
 
-	fmt.Fprintf(w, "%s\n", string(dump))
-	log.Printf("%s\n", string(dump))
+	decoded, err := url.QueryUnescape(string(dump))
+	if err != nil {
+		decoded = string(dump) // fallback to raw dump
+	}
+
+	fmt.Fprintf(w, "%s\n", decoded)
+	log.Printf("%s\n", decoded)
 }
 
 func main() {
